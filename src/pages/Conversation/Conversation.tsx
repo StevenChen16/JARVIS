@@ -129,6 +129,44 @@ export const Conversation:FC<ConversationProps> = ({
     uri: WSURL,
     onDisconnect,
   });
+
+  const sendAudioToPythonProgram = async (audioData: Float32Array) => {
+    const response = await fetch("http://127.0.0.1:10000/process_audio", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ audio_data: Array.from(audioData) }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send audio data to Python program");
+    }
+
+    const result = await response.json();
+    return result;
+  };
+
+  const onSocketMessage = useCallback(
+    async (e: MessageEvent) => {
+      const dataArray = new Uint8Array(e.data);
+      const message = decodeMessage(dataArray);
+      if (message.type === "audio") {
+        decodeAudio(message.data);
+        //For stats purposes for now
+        totalAudioMessages.current++;
+        // Send audio data to Python program
+        try {
+          const result = await sendAudioToPythonProgram(message.data);
+          console.log("Python program result:", result);
+        } catch (error) {
+          console.error("Error sending audio data to Python program:", error);
+        }
+      }
+    },
+    [decodeAudio],
+  );
+
   useEffect(() => {
     audioRecorder.current.ondataavailable = (e) => {
       audioChunks.current.push(e.data);
