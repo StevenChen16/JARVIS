@@ -56,10 +56,12 @@ export default class App {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
 
-      const response = await axios.post('http://127.0.0.1:10000/generate_stream', formData, {
+      const response = await axios.post('http://127.0.0.1:6006/generate_stream', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         responseType: 'blob',
       });
+
+      console.log('Sending audio to http://127.0.0.1:6006/generate_stream'); // P2420
 
       const audioUrl = URL.createObjectURL(response.data);
       this.playAudio(audioUrl);
