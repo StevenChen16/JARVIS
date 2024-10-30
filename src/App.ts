@@ -56,7 +56,7 @@ export default class App {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
 
-      const response = await axios.post('http://localhost:10000', formData, {
+      const response = await axios.post('http://127.0.0.1:10000/generate_stream', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         responseType: 'blob',
       });
@@ -75,5 +75,17 @@ export default class App {
       this.recordButton.disabled = false;
       this.recordButton.textContent = 'Start Recording';
     };
+  }
+
+  private async processAudio(audioPath: string): Promise<string> {
+    // Implement the processAudio method to extract audio tokens and construct input prompt
+    // This is a placeholder implementation
+    return "<|begin_of_audio|><|audio_0|><|end_of_audio|>";
+  }
+
+  private async inferenceFn(audioTokens: string, temperature = 0.2, top_p = 0.8, max_new_token = 2000) {
+    // Implement the inferenceFn method to send request to backend and process response
+    // This is a placeholder implementation
+    console.log("Inference function called with tokens:", audioTokens);
   }
 }
